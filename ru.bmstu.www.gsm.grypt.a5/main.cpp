@@ -2,7 +2,7 @@
 //  main.cpp
 //  ru.bmstu.www.gsm.grypt.a5
 //
-//  Created by Дмитрий  Загребаев on 10.11.16.
+//  Created by Дмитрий  Загребаев on 12.11.16.
 //  Copyright © 2016 Дмитрий  Загребаев. All rights reserved.
 //
 
@@ -15,47 +15,39 @@
 #define R2MASK  0x3FFFFF /* 22 bits, numbered 0..21 */
 #define R3MASK  0x7FFFFF /* 23 bits, numbered 0..22 */
 
+#define SIZE 456
+
 using namespace std;
 
 class SecretKey {
     
-    private:
-        uint64_t LFSR_1;
-        uint64_t LFSR_2;
-        uint64_t LFSR_3;
-        uint64_t key;
-        uint64_t logicBits[114];
+private:
+    uint64_t LFSR_1;
+    uint64_t LFSR_2;
+    uint64_t LFSR_3;
+    uint64_t key;
+    uint64_t logicBits[114];
     
-    private:
-//        static const uint64_t SIGNIFICANT_BITS = 0xFFFFE00000000000l;
-//        static const uint64_t MEAN_BITS = 0x1FFFFF800000l;
-//        static const uint64_t LEAST_SIGNIFICANT_BITS = 0x7FFFFFl;
+private:
+    static const uint64_t LOGIC_ONE = 1;
+    static const uint64_t first_bit_null = 0xFFFFFFFFFFFFFFFEl;
     
-    private:
-        static const uint64_t LOGIC_ONE = 1;
-//        static const uint64_t LOGIC_ONE_64_BIT = 0x8000000000000000l;
-//        static const uint64_t LAST_28_BIT = 0xFFFFFFF000000000l;
-//        static const uint64_t FIRST_22_BIT = 0x3FFFFF;
-        static const uint64_t first_bit_null = 0xFFFFFFFFFFFFFFFEl;
-    
-    public:
-        SecretKey() {
-//            logicBits = (uint64_t*)malloc(sizeof(uint64_t) * 92);
-            memset(logicBits, 0, sizeof(uint64_t) * 114);
-        }
+public:
+    SecretKey() {
+        memset(logicBits, 0, sizeof(uint64_t) * 114);
+    }
     
 public:
     uint64_t* getLogicBits() {
         return this->logicBits;
     }
     
-private: void iterations()
-    {
+private:
+    void iterations() {
         int j = 0;
         for (uint16_t i = 0; i < 192; i++)
         {
             if(i >= 100) {
-//                printf("_______________________\n");
                 *(logicBits + j) =  logicOutput();
                 j++;
             } else {
@@ -65,8 +57,8 @@ private: void iterations()
         }
     }
     
-private: void shiftLFSR()
-    {
+private:
+    void shiftLFSR() {
         uint8_t bit_10_LFSR_1 = ((LFSR_1 >> 9)  & LOGIC_ONE);
         uint8_t bit_11_LFSR_2 = ((LFSR_2 >> 10) & LOGIC_ONE);
         uint8_t bit_12_LFSR_3 = ((LFSR_3 >> 11) & LOGIC_ONE);
@@ -102,10 +94,8 @@ private: void shiftLFSR()
             else
                 LFSR_3 &= first_bit_null;
         }
-        else
-        {
-            if (bit_10_LFSR_1 == bit_11_LFSR_2)
-            {
+        else {
+            if (bit_10_LFSR_1 == bit_11_LFSR_2) {
                 LFSR_1 <<= 1;
                 LFSR_2 <<= 1;
                 
@@ -125,8 +115,7 @@ private: void shiftLFSR()
                 
             }
             
-            if (bit_10_LFSR_1 == bit_12_LFSR_3)
-            {
+            if (bit_10_LFSR_1 == bit_12_LFSR_3) {
                 LFSR_1 <<= 1;
                 LFSR_3 <<= 1;
                 
@@ -146,8 +135,7 @@ private: void shiftLFSR()
                 
             }
             
-            if (bit_11_LFSR_2 == bit_12_LFSR_3)
-            {
+            if (bit_11_LFSR_2 == bit_12_LFSR_3) {
                 LFSR_2 <<= 1;
                 LFSR_3 <<= 1;
                 
@@ -171,46 +159,38 @@ private: void shiftLFSR()
         
     }
     
-private: uint8_t logicOutput()
-    {
+private:
+    uint8_t logicOutput() {
         const uint8_t bit_19_LFSR_1 = ((LFSR_1 >> 18) & LOGIC_ONE);
         const uint8_t bit_22_LFSR_2 = ((LFSR_2 >> 21) & LOGIC_ONE);
         const uint8_t bit_23_LFSR_3 = ((LFSR_3 >> 22) & LOGIC_ONE);
         
         const uint8_t out = (bit_19_LFSR_1 + bit_22_LFSR_2 + bit_23_LFSR_3);
         
-//        printf("bit_19_LFSR_1=%i, bit_22_LFSR_2=%i, bit_23_LFSR_3=%i, out=%i, mod=%i \n",bit_19_LFSR_1, bit_22_LFSR_2, bit_23_LFSR_3,  out, out%2);
-        
-//        cout << out << "\n";
-        
         return (out % 2);
     }
     
-    private:
-        void setLFSR() {
-            resetLFSR();
-            this->LFSR_1 |= ((this->key >> 45) & R1MASK);
-            this->LFSR_2 |= ((this->key >> 23) & R2MASK);
-            this->LFSR_3 |= (this->key & R3MASK);
-        }
+private:
+    void setLFSR() {
+        resetLFSR();
+        this->LFSR_1 |= ((this->key >> 45) & R1MASK);
+        this->LFSR_2 |= ((this->key >> 23) & R2MASK);
+        this->LFSR_3 |= (this->key & R3MASK);
+    }
     
-private: void resetLFSR()
-    {
+private:
+    void resetLFSR() {
         this->LFSR_1 = 0l;
         this->LFSR_2 = 0l;
         this->LFSR_3 = 0l;
     }
     
-public: void setKey(uint64_t key, uint32_t publicKey)
-    {
+public:
+    void setKey(uint64_t key, uint32_t publicKey) {
         this->key = key;
         setLFSR();
         iterations();
-        
         addPublicKey(publicKey);
-        
-//        logicBitArrTo92BitString();
-        
     }
     
 private:
@@ -219,7 +199,6 @@ private:
         for(int i = 92; i < 114; i++) {
             *(logicBits + i) = (publicKey >> j) & 1;
             j++;
-            cout << *(logicBits + i) <<  " ";
         }
     }
     
@@ -261,41 +240,48 @@ public:
 
 int main(int argc, const char * argv[]) {
     
-//    uint64_t secretKey = key;
-    
     SecretKey* skey = new SecretKey();
     
     CryptA5* crypt = new CryptA5();
     
-    uint8_t in[456] = {65, 66, 67, 68, 69, 70, 71, 72, 73};
+//    uint8_t in[456] = {65, 66, 67, 68, 69, 70, 71, 72, 73};
+    
+    uint8_t in[SIZE];
+    memset(in, 0, sizeof(uint8_t) * SIZE);
+    
+    for(int i = 0; i < SIZE; i++)
+        cin >> *(in + i);
     
     uint8_t out[456];
-    memset(out, 96, sizeof(uint8_t) * 456);
+    memset(out, 0, sizeof(uint8_t) * SIZE);
     uint32_t pk[4] = {143135, 623515 ,323512 ,523552};
+    
+//    printf("in=");
+//    for(int i = 0; i < SIZE; i++) {
+//        printf(" %c", in[i]);
+//    }
     
     crypt->crypt(in, out, skey, pk);
     
-    for(int i = 0; i < 15; i++) {
-        printf("\n%c", out[i]);
-    }
+//    printf("\ncrypt: ");
+//    
+//    for(int i = 0; i < SIZE; i++) {
+//        printf(" %c", out[i]);
+//    }
     
     memset(in, 0, sizeof(uint8_t) * 456);
     
     crypt->crypt(out, in, skey, pk);
     
-    for(int i = 0; i < 15; i++) {
-        printf("\n%c _", in[i]);
+//    printf("\ndecrupt: ");
+    
+    for(int i = 0; i < SIZE; i++) {
+        cout << in[i];
+//        printf("%i", in[i]);
     }
     
-//    uint32_t publicKey = 123411513;
-//    
-//    skey->setKey(secretKey, publicKey);
-//    
-//    for(int i = 0; i < 92; i++)
-//        cout << *(skey->getLogicBits() + i) << " ";
-    
+    delete crypt;
     delete skey;
     
-    std::cout << "Hello, World!\n";
     return 0;
 }
