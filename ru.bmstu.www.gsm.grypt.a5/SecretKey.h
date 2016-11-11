@@ -11,6 +11,7 @@
 
 //#include <stdint>
 
-uint64_t key = 0x1223456789ABCDEF;
+//uint64_t key = 0x1223456789ABCDEF;
+uint64_t key = 5956931243121298927;
 
 #endif /* SecretKey_h */
