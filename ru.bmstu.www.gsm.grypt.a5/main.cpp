@@ -263,6 +263,8 @@ int main(int argc, const char * argv[]) {
         printf("%u\n", input[i]);
     }
     
+    printf("\n\n");
+    
     Reform(input, in);
     
 //    for(int i = 0; i < BIT_SIZE; i++)
@@ -280,24 +282,25 @@ int main(int argc, const char * argv[]) {
 //        for(int i = 0; i < BIT_SIZE; i++)
 //            cin >> *(in + i);
     
-    printf("in=");
-    for(int i = 0; i < BIT_SIZE; i++) {
-        printf(" %c", in[i]);
-    }
+//    for(int i = 0; i < BIT_SIZE; i++) {
+//        printf(" %c", in[i]);
+//    }
     
     crypt->crypt(in, out, skey, pk);
     
     printf("\ncrypt: ");
     
     for(int i = 0; i < BIT_SIZE; i++) {
-        printf(" %c", out[i]);
+//        cout << out[i] << " " << flush;
+//        fflush();
+        printf(" %i", out[i]);
     }
     
     memset(in, 0, sizeof(uint8_t) * 456);
     
     crypt->crypt(out, in, skey, pk);
     
-    printf("\ndecrupt: ");
+    printf("\n\ndecrupt: ");
     
     for(int i = 0; i < BIT_SIZE; i++) {
         cout << in[i];
@@ -308,6 +311,8 @@ int main(int argc, const char * argv[]) {
     
     uint8_t finalOut[SIZE];
     Reform_1(in, finalOut);
+    
+    printf("\n\n");
     
     for (int i = 0; i < SIZE; i++)
     {

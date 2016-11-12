@@ -74,12 +74,14 @@ void Reform_private(uint8_t *in, uint8_t *out, uint8_t codeOrDecode)
                     temp[BYTE * i + bitCount] = 1;
             }
         }
+        printf("in= ");
         for (size_t i = 0, j = 0; i < BIT_SIZE; i+=2, j++)
         {
             out[i] = temp[j];
             out[i + 1] = temp[j + HALF_BIT_SIZE];
-            printf("%u%u",reform[i], reform[i + 1]);
+            printf("%u%u",out[i], out[i + 1]);
         }
+        printf("\n\n");
         free(temp);
     }
     else
