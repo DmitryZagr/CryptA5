@@ -246,6 +246,8 @@ int main(int argc, const char * argv[]) {
     
 //    uint8_t in[456] = {65, 66, 67, 68, 69, 70, 71, 72, 73};
     
+
+    
     uint8_t in[SIZE];
     memset(in, 0, sizeof(uint8_t) * SIZE);
     
@@ -256,29 +258,39 @@ int main(int argc, const char * argv[]) {
     memset(out, 0, sizeof(uint8_t) * SIZE);
     uint32_t pk[4] = {143135, 623515 ,323512 ,523552};
     
-//    printf("in=");
-//    for(int i = 0; i < SIZE; i++) {
-//        printf(" %c", in[i]);
-//    }
+    
+//    while(true) {
+//        
+//        memset(out, 0, sizeof(uint8_t) * SIZE);
+//        memset(in, 0, sizeof(uint8_t) * SIZE);
+//        for(int i = 0; i < SIZE; i++)
+//            cin >> *(in + i);
+    
+    printf("in=");
+    for(int i = 0; i < SIZE; i++) {
+        printf(" %c", in[i]);
+    }
     
     crypt->crypt(in, out, skey, pk);
     
-//    printf("\ncrypt: ");
-//    
-//    for(int i = 0; i < SIZE; i++) {
-//        printf(" %c", out[i]);
-//    }
+    printf("\ncrypt: ");
+    
+    for(int i = 0; i < SIZE; i++) {
+        printf(" %c", out[i]);
+    }
     
     memset(in, 0, sizeof(uint8_t) * 456);
     
     crypt->crypt(out, in, skey, pk);
     
-//    printf("\ndecrupt: ");
+    printf("\ndecrupt: ");
     
     for(int i = 0; i < SIZE; i++) {
         cout << in[i];
-//        printf("%i", in[i]);
     }
+//    }
+    
+    cout << "\n";
     
     delete crypt;
     delete skey;
