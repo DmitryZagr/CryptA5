@@ -9,13 +9,17 @@
 #include <iostream>
 #include <stdint.h>
 #include "SecretKey.h"
+extern "C"
+{
+    #include "Reform.h"
+}
 
 /* Masks for the three shift registers */
 #define R1MASK  0x07FFFF /* 19 bits, numbered 0..18 */
 #define R2MASK  0x3FFFFF /* 22 bits, numbered 0..21 */
 #define R3MASK  0x7FFFFF /* 23 bits, numbered 0..22 */
 
-#define SIZE 456
+//#define BIT_SIZE 456
 
 using namespace std;
 
@@ -248,26 +252,36 @@ int main(int argc, const char * argv[]) {
     
 
     
-    uint8_t in[SIZE];
-    memset(in, 0, sizeof(uint8_t) * SIZE);
+    uint8_t in[BIT_SIZE];
+//    memset(in, 0, sizeof(uint8_t) * BIT_SIZE);
     
-    for(int i = 0; i < SIZE; i++)
-        cin >> *(in + i);
+    uint8_t input[SIZE];
+    
+    for (int i = 0; i < SIZE; i++)
+    {
+        input[i] = rand()%255;
+        printf("%u\n", input[i]);
+    }
+    
+    Reform(input, in);
+    
+//    for(int i = 0; i < BIT_SIZE; i++)
+//        cin >> *(in + i);
     
     uint8_t out[456];
-    memset(out, 0, sizeof(uint8_t) * SIZE);
+    memset(out, 0, sizeof(uint8_t) * BIT_SIZE);
     uint32_t pk[4] = {143135, 623515 ,323512 ,523552};
     
     
 //    while(true) {
 //        
-//        memset(out, 0, sizeof(uint8_t) * SIZE);
-//        memset(in, 0, sizeof(uint8_t) * SIZE);
-//        for(int i = 0; i < SIZE; i++)
+//        memset(out, 0, sizeof(uint8_t) * BIT_SIZE);
+//        memset(in, 0, sizeof(uint8_t) * BIT_SIZE);
+//        for(int i = 0; i < BIT_SIZE; i++)
 //            cin >> *(in + i);
     
     printf("in=");
-    for(int i = 0; i < SIZE; i++) {
+    for(int i = 0; i < BIT_SIZE; i++) {
         printf(" %c", in[i]);
     }
     
@@ -275,7 +289,7 @@ int main(int argc, const char * argv[]) {
     
     printf("\ncrypt: ");
     
-    for(int i = 0; i < SIZE; i++) {
+    for(int i = 0; i < BIT_SIZE; i++) {
         printf(" %c", out[i]);
     }
     
@@ -285,12 +299,20 @@ int main(int argc, const char * argv[]) {
     
     printf("\ndecrupt: ");
     
-    for(int i = 0; i < SIZE; i++) {
+    for(int i = 0; i < BIT_SIZE; i++) {
         cout << in[i];
     }
 //    }
     
     cout << "\n";
+    
+    uint8_t finalOut[SIZE];
+    Reform_1(in, finalOut);
+    
+    for (int i = 0; i < SIZE; i++)
+    {
+        printf("%u\n", finalOut[i]);
+    }
     
     delete crypt;
     delete skey;
